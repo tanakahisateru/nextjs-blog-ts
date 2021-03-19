@@ -1,27 +1,31 @@
-import Head from 'next/head'
+import Head from 'next/head';
 import Layout from "../../components/layout";
-import {getAllPostIds, getPostData} from '../../lib/posts'
+import {getAllPostIds, getPostData} from '../../lib/posts';
 import Date from "../../components/date";
-import utilStyles from '../../styles/utils.module.scss'
+import utilStyles from '../../styles/utils.module.scss';
+import {GetStaticPaths, GetStaticProps} from "next";
+import {ParsedUrlQuery} from "querystring";
 
-export async function getStaticPaths() {
+// noinspection JSUnusedGlobalSymbols
+export const getStaticPaths: GetStaticPaths = async () => {
     return {
         paths: getAllPostIds(),
-        fallback: false
+        fallback: false,
     }
-}
+};
 
-export async function getStaticProps({params}) {
+// noinspection JSUnusedGlobalSymbols
+export const getStaticProps: GetStaticProps = async ({params}: ParsedUrlQuery|any) => {
     return {
         props: {
-            postData: await getPostData(params.id)
+            postData: await getPostData(params.id),
         }
     }
-}
+};
 
+// noinspection JSUnusedGlobalSymbols
 export default function Post({postData}) {
-    return <Layout>
-        {/* Add this <Head> tag */}
+    return <Layout home={false}>
         <Head>
             <title>{postData.title}</title>
         </Head>

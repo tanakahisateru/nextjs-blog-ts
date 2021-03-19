@@ -1,5 +1,5 @@
 import classnames from "classnames"
-import styles from "./alert.modele.scss"
+import styles from "./alert.module.scss"
 
 export default function Alert({children, type}) {
     const classes = classnames({
