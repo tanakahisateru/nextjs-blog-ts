@@ -6,12 +6,19 @@ import remarkHtml from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
-export type PostData = {
+// 明確に名前付けできる独自の型は素朴に interface がよい。
+// type だとエラー時に名前が使われず展開されやすいので。
+export interface PostData {
     id: string,
-    title?: string,
-    date?: string,
+    title: string,
+    date: string,
     contentHtml?: string,
 }
+
+// ↑ 既存の型とジェネリクスで組み合わせしようとすると、すでに
+// type だったりして interface として extends できない
+// 場合がよくあるので、そういうのは type で。つまり React
+// コンポーネントまわりが type でいくやつ。
 
 export function getSortedPostsData(): PostData[] {
     // Get file names under /posts
@@ -31,10 +38,10 @@ export function getSortedPostsData(): PostData[] {
         return {
             id,
             ...matterResult.data,
-        };
+        } as PostData;
     });
     // Sort posts by date
-    return allPostsData.sort((a: any, b: any) => (a.date < b.date) ? 1 : -1);
+    return allPostsData.sort((a, b) => (a.date < b.date) ? 1 : -1);
 }
 
 export function getAllPostIds(): string[] {
@@ -43,7 +50,7 @@ export function getAllPostIds(): string[] {
     });
 }
 
-export async function getPostData(id: string) {
+export async function getPostData(id: string): Promise<PostData> {
     const fullPath = path.join(postsDirectory, `${id}.md`);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
 
@@ -60,5 +67,5 @@ export async function getPostData(id: string) {
         id,
         contentHtml,
         ...matterResult.data,
-    };
+    } as PostData;
 }

@@ -1,3 +1,9 @@
+// コンポーネント内でローカルに使うスタイルは tailwind にこだわる
+// 必要はない。というか tailwind より器用なスタイルを Sass でやりたい
+// 場合にコンポーネントを切る。tailwind はどうしても意味づけを失い
+// やすいので、意味を言語化するのが面倒なぐらいのアドホックなレイアウト
+// 調整で生きものだから。
+
 @mixin alert($color:gray) {
     border: 1px solid $color;
     background: desaturate(lighten($color, 60%), 50%);
