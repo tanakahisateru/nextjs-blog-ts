@@ -1,40 +1,55 @@
 import Head from 'next/head';
 import Layout from "../../components/layout";
-import {getAllPostIds, getPostData} from '../../lib/posts';
+import {getAllPostIds, getPostData, PostData} from '../../lib/posts';
 import Date from "../../components/date";
 import utilStyles from '../../styles/utils.module.scss';
-import {GetStaticPaths, GetStaticProps} from "next";
-import {ParsedUrlQuery} from "querystring";
+import {Component, FC} from "react";
 
-// noinspection JSUnusedGlobalSymbols
-export const getStaticPaths: GetStaticPaths = async () => {
+type PostParams = {
+    id: string,
+}
+
+type PostProps = {
+    postData: PostData,
+}
+
+export const getStaticPaths = async () => {
     return {
-        paths: getAllPostIds(),
+        paths: getAllPostIds().map(id => {
+            return {
+                params: {
+                    id: id,
+                },
+            };
+        }),
         fallback: false,
-    }
+    };
 };
 
-// noinspection JSUnusedGlobalSymbols
-export const getStaticProps: GetStaticProps = async ({params}: ParsedUrlQuery|any) => {
+export const getStaticProps = async ({params}) => {
+    const {id} = params as PostParams;
     return {
         props: {
-            postData: await getPostData(params.id),
-        }
-    }
+            postData: await getPostData(id),
+        },
+    };
 };
 
-// noinspection JSUnusedGlobalSymbols
-export default function Post({postData}) {
-    return <Layout home={false}>
-        <Head>
-            <title>{postData.title}</title>
-        </Head>
-        <article>
-            <h1 className={utilStyles.headingXl}>{postData.title}</h1>
-            <div className={utilStyles.lightText}>
-                <Date dateString={postData.date} />
-            </div>
-            <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
-        </article>
-    </Layout>
+export default class Post extends Component<PostProps> {
+
+    render() {
+        const {postData} = this.props;
+        return <Layout>
+            <Head>
+                <title>{postData.title}</title>
+            </Head>
+            <article>
+                <h1 className="text-3xl leading-6 font-extrabold tracking-tighter my-4 mx-0">{postData.title}</h1>
+                <div className={utilStyles.lightText}>
+                    <Date dateString={postData.date}/>
+                </div>
+                <div dangerouslySetInnerHTML={{__html: postData.contentHtml}}/>
+            </article>
+        </Layout>;
+    }
 }

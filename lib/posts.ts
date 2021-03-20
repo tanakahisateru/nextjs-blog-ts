@@ -6,7 +6,14 @@ import remarkHtml from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
-export function getSortedPostsData() {
+export type PostData = {
+    id: string,
+    title?: string,
+    date?: string,
+    contentHtml?: string,
+}
+
+export function getSortedPostsData(): PostData[] {
     // Get file names under /posts
     const fileNames = fs.readdirSync(postsDirectory);
     const allPostsData = fileNames.map(fileName => {
@@ -30,28 +37,9 @@ export function getSortedPostsData() {
     return allPostsData.sort((a: any, b: any) => (a.date < b.date) ? 1 : -1);
 }
 
-export function getAllPostIds() {
-    const fileNames = fs.readdirSync(postsDirectory);
-
-    // Returns an array that looks like this:
-    // [
-    //   {
-    //     params: {
-    //       id: 'ssg-ssr'
-    //     }
-    //   },
-    //   {
-    //     params: {
-    //       id: 'pre-rendering'
-    //     }
-    //   }
-    // ]
-    return fileNames.map(fileName => {
-        return {
-            params: {
-                id: fileName.replace(/\.md$/, ''),
-            },
-        };
+export function getAllPostIds(): string[] {
+    return fs.readdirSync(postsDirectory).map(fileName => {
+        return fileName.replace(/\.md$/, '');
     });
 }
 
